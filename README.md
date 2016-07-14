@@ -8,4 +8,4 @@ Eventually, this project will be transformed into a web service performing some 
 
 Run it with
 
-    ./gradlew clean bootRun
+    ./gradlew clean build && java -jar build/libs/poleposition-0.0.1.jar
