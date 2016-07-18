@@ -7,6 +7,10 @@ buildscript {
     }
 }
 
+plugins {
+    id 'org.flywaydb.flyway' version '4.0.3'
+}
+
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 
@@ -24,8 +28,16 @@ dependencies {
 
     compile 'org.projectlombok:lombok:1.16.8'
 
+    compile 'mysql:mysql-connector-java:5.1.36'
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-all:1.10.19'
+}
+
+flyway {
+    url = 'jdbc:mysql://localhost:3306/poleposition'
+    user = 'app'
+    password = 'password'    // yes, this account is only for local development
 }
 
 task wrapper(type: Wrapper) {
