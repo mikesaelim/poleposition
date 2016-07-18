@@ -1,5 +1,6 @@
 package io.github.mikesaelim.poleposition;
 
+import io.github.mikesaelim.poleposition.persistence.PersistenceConfig;
 import io.github.mikesaelim.poleposition.service.ArxivIngestionService;
 import io.github.mikesaelim.poleposition.service.ServiceConfig;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.Import;
 import java.time.LocalDate;
 import java.util.Scanner;
 
-@Import(ServiceConfig.class)
+@Import({ServiceConfig.class, PersistenceConfig.class})
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 

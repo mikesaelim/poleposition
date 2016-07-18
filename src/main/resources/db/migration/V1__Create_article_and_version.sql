@@ -21,11 +21,12 @@ CREATE TABLE article (
   PRIMARY KEY (identifier)
 );
 
-CREATE TABLE version (
+CREATE TABLE article_version (
+  id INT NOT NULL AUTO_INCREMENT,
   identifier VARCHAR(255) NOT NULL,
   version_number TINYINT UNSIGNED NOT NULL,
   submission_time_utc DATETIME NOT NULL,
   size VARCHAR(255),
   source_type VARCHAR(255),
-  PRIMARY KEY (identifier, version_number)
+  PRIMARY KEY (id)
 );
