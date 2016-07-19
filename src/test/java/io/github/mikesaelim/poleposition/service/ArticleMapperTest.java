@@ -17,6 +17,8 @@ import static org.junit.Assert.*;
 
 public class ArticleMapperTest {
 
+    private ArticleMapper mapper = new ArticleMapper();
+
     @Test
     public void testToArticlePersistence() throws Exception {
         ArticleVersion version1 = ArticleVersion.builder().versionNumber(1).submissionTime(ZonedDateTime.now()).build();
@@ -45,7 +47,7 @@ public class ArticleMapperTest {
                 .articleAbstract("abstract")
                 .build();
 
-        ArticlePersistence persistence = ArticleMapper.toPersistence(domain);
+        ArticlePersistence persistence = mapper.toPersistence(domain);
 
         assertEquals("identifier", persistence.getIdentifier());
         assertEquals(Timestamp.valueOf(LocalDateTime.of(2016, 7, 18, 11, 38, 22, 0)), persistence.getRetrievalDateTimeUtc());
@@ -101,7 +103,7 @@ public class ArticleMapperTest {
         persistence.setArticleAbstract("abstract");
         persistence.setVersions(Sets.newHashSet(versionPersistence1, versionPersistence2));
 
-        ArticleMetadata domain = ArticleMapper.fromPersistence(persistence);
+        ArticleMetadata domain = mapper.fromPersistence(persistence);
 
         assertEquals(ZonedDateTime.of(2016, 7, 18, 11, 38, 22, 0, ZoneOffset.UTC), domain.getRetrievalDateTime());
         assertEquals("identifier", domain.getIdentifier());
@@ -134,7 +136,7 @@ public class ArticleMapperTest {
                 .sourceType("sourceType")
                 .build();
 
-        ArticleVersionPersistence persistence = ArticleMapper.toPersistence(5, "identifier", domain);
+        ArticleVersionPersistence persistence = mapper.toPersistence(5, "identifier", domain);
 
         assertEquals(5, persistence.getId().intValue());
         assertEquals("identifier", persistence.getIdentifier());
@@ -154,7 +156,7 @@ public class ArticleMapperTest {
         persistence.setSize("size");
         persistence.setSourceType("sourceType");
 
-        ArticleVersion domain = ArticleMapper.fromPersistence(persistence);
+        ArticleVersion domain = mapper.fromPersistence(persistence);
 
         assertEquals(1, domain.getVersionNumber().intValue());
         assertEquals(ZonedDateTime.of(2016, 7, 18, 11, 38, 22, 0, ZoneOffset.UTC), domain.getSubmissionTime());

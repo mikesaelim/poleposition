@@ -6,6 +6,7 @@ import io.github.mikesaelim.arxivoaiharvester.model.data.ArticleMetadata;
 import io.github.mikesaelim.arxivoaiharvester.model.data.ArticleVersion;
 import io.github.mikesaelim.poleposition.persistence.ArticlePersistence;
 import io.github.mikesaelim.poleposition.persistence.ArticleVersionPersistence;
+import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -16,13 +17,17 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 
 /**
- * Static functions for mapping between domain-layer objects and persistence-layer objects.
+ * Functions for mapping between domain-layer objects and persistence-layer objects.
+ *
+ * Even though the public functions could be made static, I've made them non-static and made this a service bean so
+ * things can be mocked out during testing.
  */
+@Service
 public class ArticleMapper {
 
     // Conversions between ArticleMetadata and ArticlePersistence
 
-    public static ArticlePersistence toPersistence(ArticleMetadata domain) {
+    public ArticlePersistence toPersistence(ArticleMetadata domain) {
         ArticlePersistence persistence = new ArticlePersistence();
         persistence.setIdentifier(domain.getIdentifier());
         persistence.setRetrievalDateTimeUtc(convertToUtcTimestamp(domain.getRetrievalDateTime()));
@@ -48,7 +53,7 @@ public class ArticleMapper {
         return persistence;
     }
 
-    public static ArticleMetadata fromPersistence(ArticlePersistence persistence) {
+    public ArticleMetadata fromPersistence(ArticlePersistence persistence) {
         return ArticleMetadata.builder()
                 .retrievalDateTime(convertFromUtcTimestamp(persistence.getRetrievalDateTimeUtc()))
                 .identifier(persistence.getIdentifier())
@@ -76,7 +81,7 @@ public class ArticleMapper {
 
     // Conversions between ArticleVersion and ArticleVersionPersistence
 
-    public static ArticleVersionPersistence toPersistence(Integer id, String identifier, ArticleVersion domain) {
+    public ArticleVersionPersistence toPersistence(Integer id, String identifier, ArticleVersion domain) {
         ArticleVersionPersistence persistence = new ArticleVersionPersistence();
         persistence.setId(id);
         persistence.setIdentifier(identifier);
@@ -88,7 +93,7 @@ public class ArticleMapper {
         return persistence;
     }
 
-    public static ArticleVersion fromPersistence(ArticleVersionPersistence persistence) {
+    public ArticleVersion fromPersistence(ArticleVersionPersistence persistence) {
         return ArticleVersion.builder()
                 .versionNumber(persistence.getVersionNumber())
                 .submissionTime(convertFromUtcTimestamp(persistence.getSubmissionTimeUtc()))
@@ -100,7 +105,7 @@ public class ArticleMapper {
 
     // Conversions between Set<ArticleVersion> and Set<ArticleVersionPersistence>
 
-    public static Set<ArticleVersionPersistence> toPersistenceSet(Integer id, String identifier,
+    public Set<ArticleVersionPersistence> toPersistenceSet(Integer id, String identifier,
                                                                   Set<ArticleVersion> domainSet) {
         if (domainSet == null)  return null;
 
@@ -109,11 +114,11 @@ public class ArticleMapper {
                 .collect(toSet());
     }
 
-    public static Set<ArticleVersion> fromPersistenceSet(Set<ArticleVersionPersistence> persistenceSet) {
+    public Set<ArticleVersion> fromPersistenceSet(Set<ArticleVersionPersistence> persistenceSet) {
         if (persistenceSet == null)  return null;
 
         return persistenceSet.stream()
-                .map(ArticleMapper::fromPersistence)
+                .map(this::fromPersistence)
                 .collect(toSet());
     }
 

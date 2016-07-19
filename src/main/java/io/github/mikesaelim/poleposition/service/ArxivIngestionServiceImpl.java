@@ -13,17 +13,16 @@ import org.springframework.stereotype.Service;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 
-import static io.github.mikesaelim.poleposition.service.ArticleMapper.toPersistence;
-
 /**
- * TODO javadoc, exception handling
+ * TODO javadoc
  */
 @Service
 public class ArxivIngestionServiceImpl implements ArxivIngestionService {
 
     @Autowired
     private ArxivOAIHarvester harvester;
-
+    @Autowired
+    private ArticleMapper mapper;
     @Autowired
     private ArticlePersistenceRepository repository;
 
@@ -33,7 +32,7 @@ public class ArxivIngestionServiceImpl implements ArxivIngestionService {
         GetRecordResponse response = harvester.harvest(request);
 
         if (response.getRecord() != null) {
-            repository.save(toPersistence(response.getRecord()));
+            repository.save(mapper.toPersistence(response.getRecord()));
             System.out.println("Record for identifier = " + identifier + " saved.");
         } else {
             System.out.println("Record for identifier = " + identifier + " not found.");
@@ -47,7 +46,7 @@ public class ArxivIngestionServiceImpl implements ArxivIngestionService {
             ListRecordsResponse response = harvester.harvest(request);
 
             response.getRecords().stream()
-                    .map(ArticleMapper::toPersistence)
+                    .map(mapper::toPersistence)
                     .forEach(repository::save);
 
             System.out.println("Saved " + response.getRecords().size() + " records.");
