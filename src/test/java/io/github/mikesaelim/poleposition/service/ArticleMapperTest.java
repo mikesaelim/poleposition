@@ -71,33 +71,35 @@ public class ArticleMapperTest {
 
     @Test
     public void testFromArticlePersistence() throws Exception {
-        ArticleVersionPersistence versionPersistence1 = ArticleVersionPersistence.builder()
-                .versionNumber(1).submissionTimeUtc(Timestamp.valueOf(LocalDateTime.now())).build();
-        ArticleVersionPersistence versionPersistence2 = ArticleVersionPersistence.builder()
-                .versionNumber(2).submissionTimeUtc(Timestamp.valueOf(LocalDateTime.now())).build();
+        ArticleVersionPersistence versionPersistence1 = new ArticleVersionPersistence();
+        versionPersistence1.setVersionNumber(1);
+        versionPersistence1.setSubmissionTimeUtc(Timestamp.valueOf(LocalDateTime.now()));
 
-        ArticlePersistence persistence = ArticlePersistence.builder()
-                .identifier("identifier")
-                .retrievalDateTimeUtc(Timestamp.valueOf(LocalDateTime.of(2016, 7, 18, 11, 38, 22, 0)))
-                .datestamp(Date.valueOf(LocalDate.of(2016, 7, 18)))
-                .sets(null)
-                .deleted(false)
-                .id("id")
-                .submitter("submitter")
-                .title("title")
-                .authors("authors")
-                .categories("cat1,cat2")
-                .comments("comments")
-                .proxy("proxy")
-                .reportNo("reportNo")
-                .acmClass("acmClass")
-                .mscClass("mscClass")
-                .journalRef("journalRef")
-                .doi("doi")
-                .license("license")
-                .articleAbstract("abstract")
-                .versions(Sets.newHashSet(versionPersistence1, versionPersistence2))
-                .build();
+        ArticleVersionPersistence versionPersistence2 = new ArticleVersionPersistence();
+        versionPersistence2.setVersionNumber(2);
+        versionPersistence2.setSubmissionTimeUtc(Timestamp.valueOf(LocalDateTime.now()));
+
+        ArticlePersistence persistence = new ArticlePersistence();
+        persistence.setIdentifier("identifier");
+        persistence.setRetrievalDateTimeUtc(Timestamp.valueOf(LocalDateTime.of(2016, 7, 18, 11, 38, 22, 0)));
+        persistence.setDatestamp(Date.valueOf(LocalDate.of(2016, 7, 18)));
+        persistence.setSets(null);
+        persistence.setDeleted(false);
+        persistence.setId("id");
+        persistence.setSubmitter("submitter");
+        persistence.setTitle("title");
+        persistence.setAuthors("authors");
+        persistence.setCategories("cat1,cat2");
+        persistence.setComments("comments");
+        persistence.setProxy("proxy");
+        persistence.setReportNo("reportNo");
+        persistence.setAcmClass("acmClass");
+        persistence.setMscClass("mscClass");
+        persistence.setJournalRef("journalRef");
+        persistence.setDoi("doi");
+        persistence.setLicense("license");
+        persistence.setArticleAbstract("abstract");
+        persistence.setVersions(Sets.newHashSet(versionPersistence1, versionPersistence2));
 
         ArticleMetadata domain = ArticleMapper.fromPersistence(persistence);
 
@@ -144,14 +146,13 @@ public class ArticleMapperTest {
 
     @Test
     public void testFromVersionPersistence() throws Exception {
-        ArticleVersionPersistence persistence = ArticleVersionPersistence.builder()
-                .id(5)
-                .identifier("identifier")
-                .versionNumber(1)
-                .submissionTimeUtc(Timestamp.valueOf(LocalDateTime.of(2016, 7, 18, 11, 38, 22, 0)))
-                .size("size")
-                .sourceType("sourceType")
-                .build();
+        ArticleVersionPersistence persistence = new ArticleVersionPersistence();
+        persistence.setId(5);
+        persistence.setIdentifier("identifier");
+        persistence.setVersionNumber(1);
+        persistence.setSubmissionTimeUtc(Timestamp.valueOf(LocalDateTime.of(2016, 7, 18, 11, 38, 22, 0)));
+        persistence.setSize("size");
+        persistence.setSourceType("sourceType");
 
         ArticleVersion domain = ArticleMapper.fromPersistence(persistence);
 

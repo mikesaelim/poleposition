@@ -1,7 +1,6 @@
 package io.github.mikesaelim.poleposition.persistence;
 
 import io.github.mikesaelim.arxivoaiharvester.model.data.ArticleMetadata;
-import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,7 +14,6 @@ import java.util.Set;
 @Entity
 @Table(name = "article")
 @Data
-@Builder
 public class ArticlePersistence {
 
     @Id

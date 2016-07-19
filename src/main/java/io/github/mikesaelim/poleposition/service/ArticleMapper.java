@@ -23,28 +23,29 @@ public class ArticleMapper {
     // Conversions between ArticleMetadata and ArticlePersistence
 
     public static ArticlePersistence toPersistence(ArticleMetadata domain) {
-        return ArticlePersistence.builder()
-                .identifier(domain.getIdentifier())
-                .retrievalDateTimeUtc(convertToUtcTimestamp(domain.getRetrievalDateTime()))
-                .datestamp(Date.valueOf(domain.getDatestamp()))
-                .sets(domain.getSets() != null ? String.join(",", domain.getSets()) : null)
-                .deleted(domain.isDeleted())
-                .id(domain.getId())
-                .submitter(domain.getSubmitter())
-                .title(domain.getTitle())
-                .authors(domain.getAuthors())
-                .categories(domain.getCategories() != null ? String.join(",", domain.getCategories()) : null)
-                .comments(domain.getComments())
-                .proxy(domain.getProxy())
-                .reportNo(domain.getReportNo())
-                .acmClass(domain.getAcmClass())
-                .mscClass(domain.getMscClass())
-                .journalRef(domain.getJournalRef())
-                .doi(domain.getDoi())
-                .license(domain.getLicense())
-                .articleAbstract(domain.getArticleAbstract())
-                .versions(toPersistenceSet(null, domain.getIdentifier(), domain.getVersions()))
-                .build();
+        ArticlePersistence persistence = new ArticlePersistence();
+        persistence.setIdentifier(domain.getIdentifier());
+        persistence.setRetrievalDateTimeUtc(convertToUtcTimestamp(domain.getRetrievalDateTime()));
+        persistence.setDatestamp(Date.valueOf(domain.getDatestamp()));
+        persistence.setSets(domain.getSets() != null ? String.join(",", domain.getSets()) : null);
+        persistence.setDeleted(domain.isDeleted());
+        persistence.setId(domain.getId());
+        persistence.setSubmitter(domain.getSubmitter());
+        persistence.setTitle(domain.getTitle());
+        persistence.setAuthors(domain.getAuthors());
+        persistence.setCategories(domain.getCategories() != null ? String.join(",", domain.getCategories()) : null);
+        persistence.setComments(domain.getComments());
+        persistence.setProxy(domain.getProxy());
+        persistence.setReportNo(domain.getReportNo());
+        persistence.setAcmClass(domain.getAcmClass());
+        persistence.setMscClass(domain.getMscClass());
+        persistence.setJournalRef(domain.getJournalRef());
+        persistence.setDoi(domain.getDoi());
+        persistence.setLicense(domain.getLicense());
+        persistence.setArticleAbstract(domain.getArticleAbstract());
+        persistence.setVersions(toPersistenceSet(null, domain.getIdentifier(), domain.getVersions()));
+
+        return persistence;
     }
 
     public static ArticleMetadata fromPersistence(ArticlePersistence persistence) {
@@ -76,14 +77,15 @@ public class ArticleMapper {
     // Conversions between ArticleVersion and ArticleVersionPersistence
 
     public static ArticleVersionPersistence toPersistence(Integer id, String identifier, ArticleVersion domain) {
-        return ArticleVersionPersistence.builder()
-                .id(id)
-                .identifier(identifier)
-                .versionNumber(domain.getVersionNumber())
-                .submissionTimeUtc(convertToUtcTimestamp(domain.getSubmissionTime()))
-                .size(domain.getSize())
-                .sourceType(domain.getSourceType())
-                .build();
+        ArticleVersionPersistence persistence = new ArticleVersionPersistence();
+        persistence.setId(id);
+        persistence.setIdentifier(identifier);
+        persistence.setVersionNumber(domain.getVersionNumber());
+        persistence.setSubmissionTimeUtc(convertToUtcTimestamp(domain.getSubmissionTime()));
+        persistence.setSize(domain.getSize());
+        persistence.setSourceType(domain.getSourceType());
+
+        return persistence;
     }
 
     public static ArticleVersion fromPersistence(ArticleVersionPersistence persistence) {

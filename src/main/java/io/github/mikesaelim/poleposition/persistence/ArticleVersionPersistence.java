@@ -1,7 +1,6 @@
 package io.github.mikesaelim.poleposition.persistence;
 
 import io.github.mikesaelim.arxivoaiharvester.model.data.ArticleVersion;
-import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,7 +12,6 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "article_version")
 @Data
-@Builder
 public class ArticleVersionPersistence {
 
     @Id
