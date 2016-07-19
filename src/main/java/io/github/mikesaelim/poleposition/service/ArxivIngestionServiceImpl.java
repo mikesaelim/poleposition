@@ -14,7 +14,12 @@ import java.net.URISyntaxException;
 import java.time.LocalDate;
 
 /**
- * TODO javadoc
+ * Note that this implementation does not handle any of the unchecked exceptions coming from the harvester, since there
+ * is nothing really special to do for them - the ingestion has failed and it should be reported back to the user,
+ * which happens regardless if we catch the unchecked exceptions or not.
+ *
+ * When we upgrade this project to being a fully running service, instead of just an on-demand ETL job, we will need
+ * to handle the exceptions.
  */
 @Service
 public class ArxivIngestionServiceImpl implements ArxivIngestionService {
