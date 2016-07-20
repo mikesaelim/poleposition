@@ -2,6 +2,7 @@ package io.github.mikesaelim.poleposition.service;
 
 import com.google.common.collect.ImmutableList;
 import io.github.mikesaelim.arxivoaiharvester.ArxivOAIHarvester;
+import io.github.mikesaelim.arxivoaiharvester.exception.TimeoutException;
 import io.github.mikesaelim.arxivoaiharvester.model.data.ArticleMetadata;
 import io.github.mikesaelim.arxivoaiharvester.model.request.GetRecordRequest;
 import io.github.mikesaelim.arxivoaiharvester.model.request.ListRecordsRequest;
@@ -63,8 +64,9 @@ public class ArxivIngestionServiceImplTest {
     public void testIngestRecord() throws Exception {
         getRecordFinds(article1);
 
-        service.ingestRecord("mock_identifier");
+        boolean found = service.ingestRecord("mock_identifier");
 
+        assertTrue(found);
         verify(repository).save(persistence1);
     }
 
@@ -72,17 +74,33 @@ public class ArxivIngestionServiceImplTest {
     public void testIngestRecord_NotFound() throws Exception {
         getRecordFinds(null);
 
-        service.ingestRecord("mock_identifier");
+        boolean found = service.ingestRecord("mock_identifier");
 
+        assertFalse(found);
         verifyZeroInteractions(repository);
+    }
+
+    @Test(expected = TimeoutException.class)
+    public void testIngestRecord_TimeoutException() throws Exception {
+        getRecordTimesOut();
+
+        service.ingestRecord("mock_identifier");
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testIngestRecord_RuntimeException() throws Exception {
+        getRecordErrorsOut();
+
+        service.ingestRecord("mock_identifier");
     }
 
     @Test
     public void testIngestMetadataSince() throws Exception {
         listRecordsFinds(ImmutableList.of(article1, article2));
 
-        service.ingestMetadataSince(LocalDate.now(), null);
+        int numRecords = service.ingestMetadataSince(LocalDate.now(), null);
 
+        assertEquals(2, numRecords);
         verify(repository).save(persistence1);
         verify(repository).save(persistence2);
     }
@@ -91,9 +109,24 @@ public class ArxivIngestionServiceImplTest {
     public void testIngestMetadataSince_NotFound() throws Exception {
         listRecordsFinds(ImmutableList.of());
 
-        service.ingestMetadataSince(LocalDate.now(), null);
+        int numRecords = service.ingestMetadataSince(LocalDate.now(), null);
 
+        assertEquals(0, numRecords);
         verifyZeroInteractions(repository);
+    }
+
+    @Test(expected = TimeoutException.class)
+    public void testIngestMetadataSince_TimeoutException() throws Exception {
+        listRecordsTimesOut();
+
+        service.ingestMetadataSince(LocalDate.now(), null);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testIngestMetadataSince_RuntimeException() throws Exception {
+        listRecordsErrorsOut();
+
+        service.ingestMetadataSince(LocalDate.now(), null);
     }
 
     private void getRecordFinds(ArticleMetadata articleMetadata) {
@@ -105,6 +138,14 @@ public class ArxivIngestionServiceImplTest {
                         .build());
     }
 
+    private void getRecordTimesOut() {
+        when(harvester.harvest(any(GetRecordRequest.class))).thenThrow(new TimeoutException());
+    }
+
+    private void getRecordErrorsOut() {
+        when(harvester.harvest(any(GetRecordRequest.class))).thenThrow(new RuntimeException());
+    }
+
     private void listRecordsFinds(ImmutableList<ArticleMetadata> articleMetadataList) {
         when(harvester.harvest(any(ListRecordsRequest.class)))
                 .thenAnswer(invocation -> ListRecordsResponse.builder()
@@ -113,6 +154,14 @@ public class ArxivIngestionServiceImplTest {
                         .records(articleMetadataList)
                         .resumptionToken(null)
                         .build());
+    }
+
+    private void listRecordsTimesOut() {
+        when(harvester.harvest(any(ListRecordsRequest.class))).thenThrow(new TimeoutException());
+    }
+
+    private void listRecordsErrorsOut() {
+        when(harvester.harvest(any(ListRecordsRequest.class))).thenThrow(new RuntimeException());
     }
 
 }

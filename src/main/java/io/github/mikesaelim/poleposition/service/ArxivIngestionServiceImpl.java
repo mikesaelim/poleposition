@@ -1,6 +1,7 @@
 package io.github.mikesaelim.poleposition.service;
 
 import io.github.mikesaelim.arxivoaiharvester.ArxivOAIHarvester;
+import io.github.mikesaelim.arxivoaiharvester.exception.TimeoutException;
 import io.github.mikesaelim.arxivoaiharvester.model.request.GetRecordRequest;
 import io.github.mikesaelim.arxivoaiharvester.model.request.ListRecordsRequest;
 import io.github.mikesaelim.arxivoaiharvester.model.response.GetRecordResponse;
@@ -13,14 +14,6 @@ import org.springframework.stereotype.Service;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 
-/**
- * Note that this implementation does not handle any of the unchecked exceptions coming from the harvester, since there
- * is nothing really special to do for them - the ingestion has failed and it should be reported back to the user,
- * which happens regardless if we catch the unchecked exceptions or not.
- *
- * When we upgrade this project to being a fully running service, instead of just an on-demand ETL job, we will need
- * to handle the exceptions.
- */
 @Service
 public class ArxivIngestionServiceImpl implements ArxivIngestionService {
 
@@ -32,21 +25,31 @@ public class ArxivIngestionServiceImpl implements ArxivIngestionService {
     private ArticlePersistenceRepository repository;
 
     @Override
-    public void ingestRecord(@NonNull String identifier) throws URISyntaxException {
+    public boolean ingestRecord(@NonNull String identifier) throws URISyntaxException {
         GetRecordRequest request = new GetRecordRequest(identifier);
-        GetRecordResponse response = harvester.harvest(request);
+
+        GetRecordResponse response;
+        try {
+            response = harvester.harvest(request);
+        } catch (TimeoutException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         if (response.getRecord() != null) {
             repository.save(mapper.toPersistence(response.getRecord()));
-            System.out.println("Record for identifier = " + identifier + " saved.");
-        } else {
-            System.out.println("Record for identifier = " + identifier + " not found.");
+            return true;
         }
+
+        return false;
     }
 
     @Override
-    public void ingestMetadataSince(LocalDate fromDate, String setSpec) throws URISyntaxException {
+    public int ingestMetadataSince(LocalDate fromDate, String setSpec) throws URISyntaxException {
         ListRecordsRequest request = new ListRecordsRequest(fromDate, null, setSpec);
+        int numRecordsIngested = 0;
+
         while (request != ListRecordsRequest.NONE) {
             ListRecordsResponse response = harvester.harvest(request);
 
@@ -54,10 +57,12 @@ public class ArxivIngestionServiceImpl implements ArxivIngestionService {
                     .map(mapper::toPersistence)
                     .forEach(repository::save);
 
-            System.out.println("Saved " + response.getRecords().size() + " records.");
+            numRecordsIngested += response.getRecords().size();
 
             request = response.resumption();
         }
+
+        return numRecordsIngested;
     }
 
 }
