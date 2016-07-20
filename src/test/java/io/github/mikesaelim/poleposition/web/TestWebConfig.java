@@ -1,5 +1,6 @@
 package io.github.mikesaelim.poleposition.web;
 
+import io.github.mikesaelim.poleposition.service.ArticleLookupService;
 import io.github.mikesaelim.poleposition.service.ArxivIngestionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,11 @@ public class TestWebConfig {
     @Bean
     public ArxivIngestionService arxivIngestionService() {
         return mock(ArxivIngestionService.class);
+    }
+
+    @Bean
+    public ArticleLookupService articleLookupService() {
+        return mock(ArticleLookupService.class);
     }
 
 }
