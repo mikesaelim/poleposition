@@ -15,7 +15,7 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 
 group 'io.github.mikesaelim'
-version '0.0.1'
+version '1.0.0'
 
 repositories {
     mavenCentral()
