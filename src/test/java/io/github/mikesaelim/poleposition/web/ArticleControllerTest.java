@@ -1,7 +1,9 @@
 package io.github.mikesaelim.poleposition.web;
 
-import io.github.mikesaelim.arxivoaiharvester.exception.TimeoutException;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import io.github.mikesaelim.arxivoaiharvester.model.data.ArticleMetadata;
+import io.github.mikesaelim.arxivoaiharvester.model.data.ArticleVersion;
 import io.github.mikesaelim.poleposition.service.ArticleLookupService;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,13 +19,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {TestWebConfig.class})
@@ -44,7 +49,7 @@ public class ArticleControllerTest {
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     private static final String IDENTIFIER = "oai:arXiv.org:1302.2146";
-    private static final ArticleMetadata RECORD = ArticleMetadata.builder().identifier(IDENTIFIER).build();
+    private static final ArticleMetadata RECORD = buildRecord();
 
     @Before
     public void setUp() throws Exception {
@@ -59,9 +64,23 @@ public class ArticleControllerTest {
         when(articleLookupService.retrieveRecord(IDENTIFIER)).thenReturn(RECORD);
 
         mockMvc.perform(get("/records/" + IDENTIFIER).accept(CONTENT_TYPE))
-                .andExpect(status().isOk());
-
-        // TODO validate JSON response body
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(CONTENT_TYPE))
+                .andExpect(jsonPath("$.identifier", is(IDENTIFIER)))
+                .andExpect(jsonPath("$.datestamp", is(Lists.newArrayList(2015, 6, 15))))
+                .andExpect(jsonPath("$.sets", hasSize(2)))
+                .andExpect(jsonPath("$.id", is(RECORD.getId())))
+                .andExpect(jsonPath("$.submitter", is(RECORD.getSubmitter())))
+                .andExpect(jsonPath("$.versions", hasSize(2)))
+                .andExpect(jsonPath("$.title", is(RECORD.getTitle())))
+                .andExpect(jsonPath("$.authors", is(RECORD.getAuthors())))
+                .andExpect(jsonPath("$.categories", hasSize(2)))
+                .andExpect(jsonPath("$.categories[0]", is(RECORD.getCategories().get(0))))
+                .andExpect(jsonPath("$.categories[1]", is(RECORD.getCategories().get(1))))
+                .andExpect(jsonPath("$.comments", is(RECORD.getComments())))
+                .andExpect(jsonPath("$.doi", is(RECORD.getDoi())))
+                .andExpect(jsonPath("$.license", is(RECORD.getLicense())))
+                .andExpect(jsonPath("$.articleAbstract", is(RECORD.getArticleAbstract())));
     }
 
     @Test
@@ -70,6 +89,38 @@ public class ArticleControllerTest {
 
         mockMvc.perform(get("/records/" + IDENTIFIER).accept(CONTENT_TYPE))
                 .andExpect(status().isNotFound());
+    }
+
+    private static ArticleMetadata buildRecord() {
+        ArticleVersion v1 = ArticleVersion.builder()
+                .versionNumber(1)
+                .submissionTime(ZonedDateTime.of(2013, 2, 8, 21, 0, 1, 0, ZoneOffset.UTC))
+                .size("853kb")
+                .sourceType("D")
+                .build();
+        ArticleVersion v2 = ArticleVersion.builder()
+                .versionNumber(2)
+                .submissionTime(ZonedDateTime.of(2013, 4, 2, 1, 50, 8, 0, ZoneOffset.UTC))
+                .size("849kb")
+                .sourceType("D")
+                .build();
+
+        return ArticleMetadata.builder()
+                .retrievalDateTime(ZonedDateTime.now())
+                .identifier(IDENTIFIER)
+                .datestamp(LocalDate.of(2015, 6, 15))
+                .sets(Sets.newHashSet("physics:hep-ph", "physics:hep-ex"))
+                .id("1302.2146")
+                .submitter("Michael Saelim")
+                .versions(Sets.newHashSet(v1, v2))
+                .title("The Same-Sign Dilepton Signature of RPV/MFV SUSY")
+                .authors("Joshua Berger, Maxim Perelstein, Michael Saelim and Philip Tanedo")
+                .categories(Lists.newArrayList("hep-ph", "hep-ex"))
+                .comments("18 pages, 6 figures; v2: References added")
+                .doi("10.1007/JHEP04(2013)077")
+                .license("http://arxiv.org/licenses/nonexclusive-distrib/1.0/")
+                .articleAbstract("Blah blah blah blah")
+                .build();
     }
 
 }
