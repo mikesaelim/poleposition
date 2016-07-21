@@ -2,9 +2,10 @@ PolePosition
 ============
 
 This project is a deployable web service which pulls records from the arXiv preprint repository (using the 
-award-winning arXiv OAI Harvester library) and stores the metadata in a MySQL database, on command.
+award-winning arXiv OAI Harvester library) and stores the metadata in a MySQL database, on command.  Records are then
+retrievable from MySQL by their identifier.
 
-Eventually, this web service will be transformed to perform some mysterious function...
+Eventually, this web service will be transformed to perform some mysterious function... mwahaha...
 
 ### How to run:
 
@@ -33,3 +34,9 @@ To ingest a single record by its OAI identifier (say, `oai:arXiv.org:1302.2146`)
 To ingest all the records in a certain set (say, `physics:hep-ph`) and since a certain date, do a PUT to
 
     http://localhost:8080/records?from=2016-07-20&set=physics:hep-ph
+    
+### Lookup operations:
+
+To look up a single record by its OAI identifier after you've ingested it, do a GET to
+
+    http://localhost:8080/records/oai:arXiv.org:1302.2146
