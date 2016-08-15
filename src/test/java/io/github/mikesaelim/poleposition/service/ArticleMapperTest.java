@@ -20,8 +20,14 @@ public class ArticleMapperTest {
 
     @Test
     public void testToArticlePersistence() throws Exception {
-        ArticleVersion version1 = ArticleVersion.builder().versionNumber(1).submissionTime(ZonedDateTime.now()).build();
-        ArticleVersion version2 = ArticleVersion.builder().versionNumber(2).submissionTime(ZonedDateTime.now()).build();
+        ArticleVersion version1 = ArticleVersion.builder()
+                .versionNumber(1)
+                .submissionTime(ZonedDateTime.of(2015, 9, 29, 12, 55, 0, 0, ZoneId.of("America/Chicago")))
+                .build();
+        ArticleVersion version2 = ArticleVersion.builder()
+                .versionNumber(2)
+                .submissionTime(ZonedDateTime.now())
+                .build();
 
         ArticleMetadata domain = ArticleMetadata.builder()
                 .retrievalDateTime(ZonedDateTime.of(2016, 7, 18, 6, 38, 22, 0, ZoneId.of("America/Chicago")))
@@ -49,7 +55,11 @@ public class ArticleMapperTest {
         ArticlePersistence persistence = mapper.toPersistence(domain);
 
         assertEquals("identifier", persistence.getIdentifier());
-        assertEquals(Timestamp.valueOf(LocalDateTime.of(2016, 7, 18, 11, 38, 22, 0)), persistence.getRetrievalDateTimeUtc());
+        assertEquals("cat1", persistence.getPrimaryCategory());
+        assertEquals(Timestamp.valueOf(LocalDateTime.of(2015, 9, 29, 17, 55, 0, 0)),
+                persistence.getSubmissionTimeUtc());
+        assertEquals(Timestamp.valueOf(LocalDateTime.of(2016, 7, 18, 11, 38, 22, 0)),
+                persistence.getRetrievalDateTimeUtc());
         assertEquals(Date.valueOf(LocalDate.of(2016, 7, 18)), persistence.getDatestamp());
         assertNull(persistence.getSets());
         assertFalse(persistence.isDeleted());
@@ -82,6 +92,8 @@ public class ArticleMapperTest {
 
         ArticlePersistence persistence = new ArticlePersistence();
         persistence.setIdentifier("identifier");
+        persistence.setPrimaryCategory("blah blah");   // shouldn't be mapped over
+        persistence.setSubmissionTimeUtc(Timestamp.valueOf(LocalDateTime.of(1980, 4, 1, 12, 23)));  // shouldn't be mapped over
         persistence.setRetrievalDateTimeUtc(Timestamp.valueOf(LocalDateTime.of(2016, 7, 18, 11, 38, 22, 0)));
         persistence.setDatestamp(Date.valueOf(LocalDate.of(2016, 7, 18)));
         persistence.setSets(null);

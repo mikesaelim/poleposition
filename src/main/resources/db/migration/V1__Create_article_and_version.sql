@@ -1,5 +1,7 @@
 CREATE TABLE article (
   identifier VARCHAR(255) NOT NULL,
+  primary_category VARCHAR(255) NOT NULL,
+  submission_time_utc DATETIME NOT NULL,
   retrieval_date_time_utc DATETIME NOT NULL,
   datestamp DATE NOT NULL,
   sets VARCHAR(255),

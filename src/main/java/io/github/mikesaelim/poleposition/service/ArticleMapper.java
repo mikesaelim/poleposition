@@ -28,8 +28,15 @@ public class ArticleMapper {
     // Conversions between ArticleMetadata and ArticlePersistence
 
     public ArticlePersistence toPersistence(ArticleMetadata domain) {
+        ArticleVersion firstVersion = domain.getVersions().stream()
+                .filter(v -> v.getVersionNumber().equals(1))
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("No version 1 of article " + domain.getIdentifier()));
+
         ArticlePersistence persistence = new ArticlePersistence();
         persistence.setIdentifier(domain.getIdentifier());
+        persistence.setPrimaryCategory(domain.getCategories().get(0));
+        persistence.setSubmissionTimeUtc(convertToUtcTimestamp(firstVersion.getSubmissionTime()));
         persistence.setRetrievalDateTimeUtc(convertToUtcTimestamp(domain.getRetrievalDateTime()));
         persistence.setDatestamp(Date.valueOf(domain.getDatestamp()));
         persistence.setSets(domain.getSets() != null ? String.join(",", domain.getSets()) : null);
@@ -38,7 +45,7 @@ public class ArticleMapper {
         persistence.setSubmitter(domain.getSubmitter());
         persistence.setTitle(domain.getTitle());
         persistence.setAuthors(domain.getAuthors());
-        persistence.setCategories(domain.getCategories() != null ? String.join(",", domain.getCategories()) : null);
+        persistence.setCategories(String.join(",", domain.getCategories()));
         persistence.setComments(domain.getComments());
         persistence.setProxy(domain.getProxy());
         persistence.setReportNo(domain.getReportNo());

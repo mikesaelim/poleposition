@@ -16,9 +16,27 @@ import java.util.Set;
 @Data
 public class ArticlePersistence {
 
+    /**
+     * OAI identifier of the record.  Primary key.
+     */
     @Id
     @Column(name = "identifier", nullable = false)
     private String identifier;
+
+    /**
+     * Primary category that the record was submitted under.  This is duplicated information corresponding to the first
+     * element of the "categories" list, in order to facilitate easier queries.  Other elements in the "categories" list
+     * are the cross-listed categories.
+     */
+    @Column(name = "primary_category", nullable = false)
+    private String primaryCategory;
+
+    /**
+     * Submission time, in UTC, of the first version of the article.  This is duplicated information corresponding to
+     * the submission time of the article version with version number 1, in order to facilitate easier queries.
+     */
+    @Column(name = "submission_time_utc", nullable = false)
+    private Timestamp submissionTimeUtc;
 
     @Column(name = "retrieval_date_time_utc", nullable = false)
     private Timestamp retrievalDateTimeUtc;
