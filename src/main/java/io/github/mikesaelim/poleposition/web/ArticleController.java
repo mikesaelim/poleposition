@@ -5,10 +5,11 @@ import io.github.mikesaelim.poleposition.service.ArticleLookupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -29,6 +30,30 @@ public class ArticleController {
         ArticleMetadata record = articleLookupService.retrieveRecord(identifier);
 
         return record == null ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null) : ResponseEntity.ok(record);
+    }
+
+    /**
+     * Retrieve the records for a given primary category, with original submission times that fall within the
+     * acceptance window corresponding to a given day.  The returned list is sorted by submission time.
+     *
+     * @param primaryCategory primary category
+     * @param dayString day of submission, in ISO 8601 format
+     * @return 200 OK and the list of records sorted by submission time, or an empty list if there are none
+     *         400 Bad Request if either the primary category or day are missing
+     *         400 Bad Request if the day is not in ISO 8601 format
+     */
+    @RequestMapping(value = "/records", method = RequestMethod.GET)
+    ResponseEntity<List<ArticleMetadata>> retrieveRecordsByPrimaryCategoryAndDay(
+            @RequestParam("category") String primaryCategory, @RequestParam("day") String dayString) {
+
+        LocalDate day;
+        try {
+            day = LocalDate.parse(dayString);
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        return ResponseEntity.ok(articleLookupService.retrieveRecordsFor(primaryCategory, day));
     }
 
 }

@@ -26,6 +26,7 @@ import java.time.ZonedDateTime;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,6 +50,8 @@ public class ArticleControllerTest {
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     private static final String IDENTIFIER = "oai:arXiv.org:1302.2146";
+    private static final String PRIMARY_CATEGORY = "hep-ph";
+    private static final LocalDate DAY = LocalDate.of(2013, 2, 8);
     private static final ArticleMetadata RECORD = buildRecord();
 
     @Before
@@ -89,6 +92,51 @@ public class ArticleControllerTest {
 
         mockMvc.perform(get("/records/" + IDENTIFIER).accept(CONTENT_TYPE))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testRetrieveRecordsFor() throws Exception {
+        when(articleLookupService.retrieveRecordsFor(PRIMARY_CATEGORY, DAY))
+                .thenReturn(Lists.newArrayList(RECORD, RECORD));
+
+        mockMvc.perform(get("/records?category=" + PRIMARY_CATEGORY + "&day=" + DAY.toString()).accept(CONTENT_TYPE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(CONTENT_TYPE))
+                .andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    public void testRetrieveRecordsFor_NoneFound() throws Exception {
+        when(articleLookupService.retrieveRecordsFor(PRIMARY_CATEGORY, DAY)).thenReturn(Lists.newArrayList());
+
+        mockMvc.perform(get("/records?category=" + PRIMARY_CATEGORY + "&day=" + DAY.toString()).accept(CONTENT_TYPE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(CONTENT_TYPE))
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    public void testRetrieveRecordsFor_NoCategory() throws Exception {
+        mockMvc.perform(get("/records?day=" + DAY.toString()).accept(CONTENT_TYPE))
+                .andExpect(status().isBadRequest());
+
+        verifyZeroInteractions(articleLookupService);
+    }
+
+    @Test
+    public void testRetrieveRecordsFor_NoDay() throws Exception {
+        mockMvc.perform(get("/records?category=" + PRIMARY_CATEGORY).accept(CONTENT_TYPE))
+                .andExpect(status().isBadRequest());
+
+        verifyZeroInteractions(articleLookupService);
+    }
+
+    @Test
+    public void testRetrieveRecordsFor_InvalidDay() throws Exception {
+        mockMvc.perform(get("/records?category=" + PRIMARY_CATEGORY + " &day=2016-07").accept(CONTENT_TYPE))
+                .andExpect(status().isBadRequest());
+
+        verifyZeroInteractions(articleLookupService);
     }
 
     private static ArticleMetadata buildRecord() {
