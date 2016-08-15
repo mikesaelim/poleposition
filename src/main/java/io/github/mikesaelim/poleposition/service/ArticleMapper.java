@@ -14,6 +14,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
+import static io.github.mikesaelim.poleposition.service.TimeUtils.convertFromUtcTimestamp;
+import static io.github.mikesaelim.poleposition.service.TimeUtils.convertToUtcTimestamp;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -130,14 +132,5 @@ public class ArticleMapper {
     }
 
 
-    // Conversions between ZonedDateTime and Timestamp
-
-    private static Timestamp convertToUtcTimestamp(ZonedDateTime zonedDateTime) {
-        return Timestamp.valueOf(zonedDateTime.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime());
-    }
-
-    private static ZonedDateTime convertFromUtcTimestamp(Timestamp timestamp) {
-        return ZonedDateTime.of(timestamp.toLocalDateTime(), ZoneOffset.UTC);
-    }
 
 }
