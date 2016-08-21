@@ -96,7 +96,7 @@ public class ArticleControllerTest {
     }
 
     @Test
-    public void testRetrieveRecordsFor() throws Exception {
+    public void testRetrieveRecordsByPrimaryCategoryAndDay() throws Exception {
         when(articleLookupService.retrieveRecordsFor(PRIMARY_CATEGORY, DAY))
                 .thenReturn(Lists.newArrayList(RECORD, RECORD));
 
@@ -107,7 +107,7 @@ public class ArticleControllerTest {
     }
 
     @Test
-    public void testRetrieveRecordsFor_NoneFound() throws Exception {
+    public void testRetrieveRecordsByPrimaryCategoryAndDay_NoneFound() throws Exception {
         when(articleLookupService.retrieveRecordsFor(PRIMARY_CATEGORY, DAY)).thenReturn(Lists.newArrayList());
 
         mockMvc.perform(get("/records?category=" + PRIMARY_CATEGORY + "&day=" + DAY.toString()).accept(CONTENT_TYPE))
@@ -117,7 +117,7 @@ public class ArticleControllerTest {
     }
 
     @Test
-    public void testRetrieveRecordsFor_NoAcceptanceWindow() throws Exception {
+    public void testRetrieveRecordsByPrimaryCategoryAndDay_NoAcceptanceWindow() throws Exception {
         when(articleLookupService.retrieveRecordsFor(PRIMARY_CATEGORY, DAY))
                 .thenThrow(new NoAcceptanceWindowException());
 
@@ -126,24 +126,59 @@ public class ArticleControllerTest {
     }
 
     @Test
-    public void testRetrieveRecordsFor_NoCategory() throws Exception {
+    public void testRetrieveRecordsByPrimaryCategoryAndDay_InvalidParams() throws Exception {
         mockMvc.perform(get("/records?day=" + DAY.toString()).accept(CONTENT_TYPE))
                 .andExpect(status().isBadRequest());
 
-        verifyZeroInteractions(articleLookupService);
-    }
-
-    @Test
-    public void testRetrieveRecordsFor_NoDay() throws Exception {
         mockMvc.perform(get("/records?category=" + PRIMARY_CATEGORY).accept(CONTENT_TYPE))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/records?category=" + PRIMARY_CATEGORY + " &day=2016-07").accept(CONTENT_TYPE))
                 .andExpect(status().isBadRequest());
 
         verifyZeroInteractions(articleLookupService);
     }
 
     @Test
-    public void testRetrieveRecordsFor_InvalidDay() throws Exception {
-        mockMvc.perform(get("/records?category=" + PRIMARY_CATEGORY + " &day=2016-07").accept(CONTENT_TYPE))
+    public void testRetrieveFirstRecordByPrimaryCategoryAndDay() throws Exception {
+        when(articleLookupService.retrieveRecordsFor(PRIMARY_CATEGORY, DAY))
+                .thenReturn(Lists.newArrayList(RECORD, RECORD));
+
+        mockMvc.perform(get("/records/first?category=" + PRIMARY_CATEGORY + "&day=" + DAY.toString())
+                .accept(CONTENT_TYPE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(CONTENT_TYPE))
+                .andExpect(jsonPath("$.identifier", is(IDENTIFIER)));
+    }
+
+    @Test
+    public void testRetrieveFirstRecordByPrimaryCategoryAndDay_NoneFound() throws Exception {
+        when(articleLookupService.retrieveRecordsFor(PRIMARY_CATEGORY, DAY)).thenReturn(Lists.newArrayList());
+
+        mockMvc.perform(get("/records/first?category=" + PRIMARY_CATEGORY + "&day=" + DAY.toString())
+                .accept(CONTENT_TYPE))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testRetrieveFirstRecordByPrimaryCategoryAndDay_NoAcceptanceWindow() throws Exception {
+        when(articleLookupService.retrieveRecordsFor(PRIMARY_CATEGORY, DAY))
+                .thenThrow(new NoAcceptanceWindowException());
+
+        mockMvc.perform(get("/records/first?category=" + PRIMARY_CATEGORY + "&day=" + DAY.toString())
+                .accept(CONTENT_TYPE))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testRetrieveFirstRecordByPrimaryCategoryAndDay_InvalidParams() throws Exception {
+        mockMvc.perform(get("/records/first?day=" + DAY.toString()).accept(CONTENT_TYPE))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/records/first?category=" + PRIMARY_CATEGORY).accept(CONTENT_TYPE))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/records/first?category=" + PRIMARY_CATEGORY + " &day=2016-07").accept(CONTENT_TYPE))
                 .andExpect(status().isBadRequest());
 
         verifyZeroInteractions(articleLookupService);

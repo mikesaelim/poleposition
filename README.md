@@ -27,22 +27,26 @@ which will deploy it to localhost:8080.
 
 ### Ingestion operations:
 
-To ingest a single record by its OAI identifier (say, `oai:arXiv.org:1302.2146`), do a PUT to
+To ingest a single record by its OAI identifier (say, `oai:arXiv.org:1302.2146`),
 
-    http://localhost:8080/records/oai:arXiv.org:1302.2146
+    PUT http://localhost:8080/records/oai:arXiv.org:1302.2146
     
-To ingest all the records in a certain set (say, `physics:hep-ph`) and since a certain date, do a PUT to
+To ingest all the records in a certain set (say, `physics:hep-ph`) and since a certain date,
 
-    http://localhost:8080/records?from=2016-07-20&set=physics:hep-ph
+    PUT http://localhost:8080/records?from=2016-07-20&set=physics:hep-ph
     
 ### Lookup operations:
 
-To look up a single record by its OAI identifier after you've ingested it, do a GET to
+To look up a single record by its OAI identifier after you've ingested it,
 
-    http://localhost:8080/records/oai:arXiv.org:1302.2146
+    GET http://localhost:8080/records/oai:arXiv.org:1302.2146
 
 To look up the records submitted during an acceptance window starting on a certain day, for a certain primary category, 
-do a GET to
     
-    http://localhost:8080/records?category=hep-ph&day=2016-08-22
+    GET http://localhost:8080/records?category=hep-ph&day=2016-08-22
+    
+To look up the earliest submitted record during an acceptance window starting on a certain day, for a certain primary
+category,
+
+    GET http://localhost:8080/records/first?category=hep-ph&day=2016-08-22
     

@@ -47,7 +47,6 @@ public class ArticleController {
     @RequestMapping(value = "/records", method = RequestMethod.GET)
     ResponseEntity<List<ArticleMetadata>> retrieveRecordsByPrimaryCategoryAndDay(
             @RequestParam("category") String primaryCategory, @RequestParam("day") String dayString) {
-
         LocalDate day;
         try {
             day = LocalDate.parse(dayString);
@@ -57,6 +56,37 @@ public class ArticleController {
 
         try {
             return ResponseEntity.ok(articleLookupService.retrieveRecordsFor(primaryCategory, day));
+        } catch (NoAcceptanceWindowException e) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    /**
+     * Retrieve the earliest submitted record for a given primary category, with an original submission time that falls
+     * within the acceptance window corresponding to a given day.
+     *
+     * @param primaryCategory primary category
+     * @param dayString day of submission, in ISO 8601 format
+     * @return 200 OK and the earliest submitted record
+     *         204 No Content if no records were submitted in this acceptance window and for this primary category
+     *         204 No Content if no valid acceptance window starts on that day
+     *         400 Bad Request if either the primary category or day are missing
+     *         400 Bad Request if the day is not in ISO 8601 format
+     */
+    @RequestMapping(value = "/records/first", method = RequestMethod.GET)
+    ResponseEntity<ArticleMetadata> retrieveFirstRecordByPrimaryCategoryAndDay(
+            @RequestParam("category") String primaryCategory, @RequestParam("day") String dayString) {
+        LocalDate day;
+        try {
+            day = LocalDate.parse(dayString);
+        } catch (DateTimeParseException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            List<ArticleMetadata> records = articleLookupService.retrieveRecordsFor(primaryCategory, day);
+
+            return records.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : ResponseEntity.ok(records.get(0));
         } catch (NoAcceptanceWindowException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
