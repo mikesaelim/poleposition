@@ -24,7 +24,7 @@ public class AcceptanceWindowCalculator {
     /**
      * Calculate the acceptance window starting on a given day.  Returns {@literal null} if there isn't one.
      *
-     * Right now there is no logic concerning holidays.
+     * TODO Right now there is no logic concerning holidays.
      *
      * @param date any date
      * @return acceptance window starting at 4pm ET and ending on the next day at 4pm ET

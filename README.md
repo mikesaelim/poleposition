@@ -40,3 +40,9 @@ To ingest all the records in a certain set (say, `physics:hep-ph`) and since a c
 To look up a single record by its OAI identifier after you've ingested it, do a GET to
 
     http://localhost:8080/records/oai:arXiv.org:1302.2146
+
+To look up the records submitted during an acceptance window starting on a certain day, for a certain primary category, 
+do a GET to
+    
+    http://localhost:8080/records?category=hep-ph&day=2016-08-22
+    
