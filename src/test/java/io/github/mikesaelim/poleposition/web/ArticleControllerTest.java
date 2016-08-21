@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import io.github.mikesaelim.arxivoaiharvester.model.data.ArticleMetadata;
 import io.github.mikesaelim.arxivoaiharvester.model.data.ArticleVersion;
 import io.github.mikesaelim.poleposition.service.ArticleLookupService;
+import io.github.mikesaelim.poleposition.service.NoAcceptanceWindowException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -113,6 +114,15 @@ public class ArticleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    public void testRetrieveRecordsFor_NoAcceptanceWindow() throws Exception {
+        when(articleLookupService.retrieveRecordsFor(PRIMARY_CATEGORY, DAY))
+                .thenThrow(new NoAcceptanceWindowException());
+
+        mockMvc.perform(get("/records?category=" + PRIMARY_CATEGORY + "&day=" + DAY.toString()).accept(CONTENT_TYPE))
+                .andExpect(status().isNoContent());
     }
 
     @Test

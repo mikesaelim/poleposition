@@ -89,6 +89,13 @@ public class ArticleLookupServiceImplTest {
         assertEquals(article2, result.get(1));
     }
 
+    @Test(expected = NoAcceptanceWindowException.class)
+    public void testRetrieveRecordsFor_NoAcceptanceWindow() throws Exception {
+        when(acceptanceWindowCalculator.acceptanceWindowFor(DAY)).thenReturn(null);
+
+        service.retrieveRecordsFor(PRIMARY_CATEGORY, DAY);
+    }
+
     @Test
     public void testRetrieveRecordsFor_NoneFound() throws Exception {
         when(repository.findByPrimaryCategoryAndSubmissionTime(PRIMARY_CATEGORY, START_TIMESTAMP, END_TIMESTAMP))

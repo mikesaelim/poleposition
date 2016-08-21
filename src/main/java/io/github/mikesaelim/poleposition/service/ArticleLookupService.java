@@ -20,12 +20,13 @@ public interface ArticleLookupService {
 
     /**
      * Retrieve a list of records for a given primary category, with original submission times that fall within the
-     * acceptance window corresponding to a given day.  The returned list is sorted by submission time.
+     * acceptance window starting on a given day.  The returned list is sorted by submission time.
      *
      * @param primaryCategory primary category
      * @param day any date
      * @return list of article metadata records sorted by original submission time
+     * @throws NoAcceptanceWindowException if no corresponding acceptance window starts on that day
      */
-    List<ArticleMetadata> retrieveRecordsFor(String primaryCategory, LocalDate day);
+    List<ArticleMetadata> retrieveRecordsFor(String primaryCategory, LocalDate day) throws NoAcceptanceWindowException;
 
 }

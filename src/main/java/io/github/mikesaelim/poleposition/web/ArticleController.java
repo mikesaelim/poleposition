@@ -2,6 +2,7 @@ package io.github.mikesaelim.poleposition.web;
 
 import io.github.mikesaelim.arxivoaiharvester.model.data.ArticleMetadata;
 import io.github.mikesaelim.poleposition.service.ArticleLookupService;
+import io.github.mikesaelim.poleposition.service.NoAcceptanceWindowException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,7 @@ public class ArticleController {
      * @param primaryCategory primary category
      * @param dayString day of submission, in ISO 8601 format
      * @return 200 OK and the list of records sorted by submission time, or an empty list if there are none
+     *         204 No Content if no valid acceptance window starts on that day
      *         400 Bad Request if either the primary category or day are missing
      *         400 Bad Request if the day is not in ISO 8601 format
      */
@@ -50,10 +52,14 @@ public class ArticleController {
         try {
             day = LocalDate.parse(dayString);
         } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().body(null);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return ResponseEntity.ok(articleLookupService.retrieveRecordsFor(primaryCategory, day));
+        try {
+            return ResponseEntity.ok(articleLookupService.retrieveRecordsFor(primaryCategory, day));
+        } catch (NoAcceptanceWindowException e) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
 }

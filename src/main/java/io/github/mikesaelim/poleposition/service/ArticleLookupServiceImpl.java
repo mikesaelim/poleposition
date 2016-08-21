@@ -35,8 +35,12 @@ public class ArticleLookupServiceImpl implements ArticleLookupService {
     }
 
     @Override
-    public List<ArticleMetadata> retrieveRecordsFor(@NonNull String primaryCategory, @NonNull LocalDate day) {
+    public List<ArticleMetadata> retrieveRecordsFor(@NonNull String primaryCategory, @NonNull LocalDate day)
+            throws NoAcceptanceWindowException {
         AcceptanceWindow acceptanceWindow = acceptanceWindowCalculator.acceptanceWindowFor(day);
+        if (acceptanceWindow == null) {
+            throw new NoAcceptanceWindowException("No acceptance window starting on " + day.toString());
+        }
 
         return repository.findByPrimaryCategoryAndSubmissionTime(primaryCategory,
                 convertToUtcTimestamp(acceptanceWindow.getStart()), convertToUtcTimestamp(acceptanceWindow.getEnd()))

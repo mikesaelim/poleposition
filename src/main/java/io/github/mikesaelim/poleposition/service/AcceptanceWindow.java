@@ -18,7 +18,7 @@ import java.time.ZonedDateTime;
 @Value
 public class AcceptanceWindow {
 
-    public static ZoneId EASTERN_TIME = ZoneId.of("America/New_York");
+    public static final ZoneId EASTERN_TIME = ZoneId.of("America/New_York");
 
     private ZonedDateTime start;
     private ZonedDateTime end;
