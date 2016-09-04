@@ -2,15 +2,19 @@ PolePosition
 ============
 
 This project is a deployable web service which pulls records from the arXiv preprint repository (using the 
-award-winning arXiv OAI Harvester library) and stores the metadata in a MySQL database, on command.  Records are then
-retrievable from MySQL by their identifier.
+award-winning [arXiv OAI Harvester library](https://github.com/mikesaelim/arXivOAIHarvester)) and stores the metadata 
+in a MySQL database, on command.  Records are then retrievable from MySQL by their identifier.
 
 Eventually, this web service will be transformed to perform some mysterious function... mwahaha...
 
 ### How to run:
 
-You'll first need to let the app know where your MySQL database is.  Change the settings in the `application.yml` and
-`build.gradle` (under the "flyway" closure) files to point to your database.
+Unfortunately, right now the artifact for the [arXiv OAI Harvester](https://github.com/mikesaelim/arXivOAIHarvester) 
+library isn't published anywhere, so you'll need to publish it locally.  Once you've cloned it, follow the instructions
+in that project's README.md to do that.
+
+Coming back to this project, you'll next need to let the app know where your MySQL database is.  Change the settings in 
+the `application.yml` and `build.gradle` (under the "flyway" closure) files to point to your database.
 
 Optionally, change the configuration in `application.yml` for how you want the harvester to hit the arXiv OAI 
 repository.
