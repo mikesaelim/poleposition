@@ -12,7 +12,7 @@ plugins {
 }
 
 apply plugin: 'java'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 
 group 'io.github.mikesaelim'
 version '2.3.0'
@@ -35,10 +35,7 @@ dependencies {
     compile 'com.zaxxer:HikariCP:2.4.1'
     compile 'mysql:mysql-connector-java:5.1.36'
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.springframework.boot:spring-boot-starter-test:1.4.3.RELEASE'
-    testCompile 'com.jayway.jsonpath:json-path:2.2.0'
 }
 
 flyway {
