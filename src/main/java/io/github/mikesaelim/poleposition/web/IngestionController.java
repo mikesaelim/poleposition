@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/records")
 public class IngestionController {
 
     @Autowired
@@ -29,7 +29,7 @@ public class IngestionController {
      *         503 Service Unavailable if the operation timed out
      *         500 Internal Server Error for any other error
      */
-    @RequestMapping(value = "/records/{identifier}", method = RequestMethod.PUT)
+    @PutMapping("/{identifier}")
     ResponseEntity<String> ingestRecordByIdentifier(@PathVariable String identifier) {
         try {
             boolean found = ingestionService.ingestRecord(identifier);
@@ -58,7 +58,7 @@ public class IngestionController {
      *         503 Service Unavailable if the operation timed out
      *         500 Internal Server Error for any other error
      */
-    @RequestMapping(value = "/records", method = RequestMethod.PUT)
+    @PutMapping
     ResponseEntity<String> ingestRecordsSince(@RequestParam("from") String fromString,
                                               @RequestParam("set") String setSpec) {
         if (StringUtils.isBlank(fromString) || StringUtils.isBlank(setSpec)) {
