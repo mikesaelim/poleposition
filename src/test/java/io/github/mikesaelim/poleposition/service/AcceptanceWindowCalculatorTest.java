@@ -1,6 +1,5 @@
 package io.github.mikesaelim.poleposition.service;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -13,10 +12,6 @@ import static org.junit.Assert.assertNull;
 public class AcceptanceWindowCalculatorTest {
 
     private AcceptanceWindowCalculator calculator = new AcceptanceWindowCalculator();
-
-    @Before
-    public void setUp() throws Exception {
-    }
 
     @Test
     public void testAcceptanceWindowFor_Tuesday() throws Exception {
