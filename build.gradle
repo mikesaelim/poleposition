@@ -36,6 +36,7 @@ dependencies {
     compile 'mysql:mysql-connector-java:5.1.36'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test:1.4.3.RELEASE'
+    testCompile 'com.h2database:h2:1.4.193'
 }
 
 flyway {
