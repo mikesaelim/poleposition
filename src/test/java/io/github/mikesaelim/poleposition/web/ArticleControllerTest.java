@@ -10,15 +10,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.Charset;
 import java.time.LocalDate;
@@ -32,20 +29,16 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {TestWebConfig.class})
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@WebMvcTest(ArticleController.class)
 public class ArticleControllerTest {
 
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
-    private ArticleLookupService articleLookupService;
-
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
     private MockMvc mockMvc;
+
+    @MockBean
+    private ArticleLookupService articleLookupService;
 
     private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -57,10 +50,7 @@ public class ArticleControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         Mockito.reset(articleLookupService);
-
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
@@ -71,7 +61,7 @@ public class ArticleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$.identifier", is(IDENTIFIER)))
-                .andExpect(jsonPath("$.datestamp", is(Lists.newArrayList(2015, 6, 15))))
+                .andExpect(jsonPath("$.datestamp", is(RECORD.getDatestamp().toString())))
                 .andExpect(jsonPath("$.sets", hasSize(2)))
                 .andExpect(jsonPath("$.id", is(RECORD.getId())))
                 .andExpect(jsonPath("$.submitter", is(RECORD.getSubmitter())))

@@ -9,9 +9,6 @@ import io.github.mikesaelim.poleposition.persistence.ArticleVersionPersistence;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Set;
 
 import static io.github.mikesaelim.poleposition.service.TimeUtils.convertFromUtcTimestamp;

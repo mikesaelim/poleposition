@@ -13,7 +13,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/records")
 public class ArticleController {
 
     @Autowired
@@ -26,7 +26,7 @@ public class ArticleController {
      * @return 200 OK if the record was found
      *         404 Not Found if the record could not be found
      */
-    @RequestMapping(value = "/records/{identifier}", method = RequestMethod.GET)
+    @GetMapping("/{identifier}")
     ResponseEntity<ArticleMetadata> retrieveRecordByIdentifier(@PathVariable String identifier) {
         ArticleMetadata record = articleLookupService.retrieveRecord(identifier);
 
@@ -44,7 +44,7 @@ public class ArticleController {
      *         400 Bad Request if either the primary category or day are missing
      *         400 Bad Request if the day is not in ISO 8601 format
      */
-    @RequestMapping(value = "/records", method = RequestMethod.GET)
+    @GetMapping
     ResponseEntity<List<ArticleMetadata>> retrieveRecordsByPrimaryCategoryAndDay(
             @RequestParam("category") String primaryCategory, @RequestParam("day") String dayString) {
         LocalDate day;
@@ -73,7 +73,7 @@ public class ArticleController {
      *         400 Bad Request if either the primary category or day are missing
      *         400 Bad Request if the day is not in ISO 8601 format
      */
-    @RequestMapping(value = "/records/first", method = RequestMethod.GET)
+    @GetMapping("/first")
     ResponseEntity<ArticleMetadata> retrieveFirstRecordByPrimaryCategoryAndDay(
             @RequestParam("category") String primaryCategory, @RequestParam("day") String dayString) {
         LocalDate day;

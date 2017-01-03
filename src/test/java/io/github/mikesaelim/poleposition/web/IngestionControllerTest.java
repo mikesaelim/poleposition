@@ -6,14 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URISyntaxException;
 import java.time.LocalDate;
@@ -23,20 +20,16 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {TestWebConfig.class})
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@WebMvcTest(IngestionController.class)
 public class IngestionControllerTest {
 
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
-    private ArxivIngestionService arxivIngestionService;
-
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
     private MockMvc mockMvc;
+
+    @MockBean
+    private ArxivIngestionService arxivIngestionService;
 
     private static final String IDENTIFIER = "oai:arXiv.org:1302.2146";
     private static final LocalDate FROM_DATE = LocalDate.of(2016, 7, 20);
@@ -45,10 +38,7 @@ public class IngestionControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         Mockito.reset(arxivIngestionService);
-
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
