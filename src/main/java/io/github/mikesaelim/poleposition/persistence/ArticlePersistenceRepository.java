@@ -14,6 +14,8 @@ public interface ArticlePersistenceRepository extends JpaRepository<ArticlePersi
     /**
      * Retrieve a list of entries with the given primary category and an original submission time in a certain range.
      * The returned list is sorted in ascending order by the submission time.
+     *
+     * This will return an empty list if any parameters are null.  See https://jira.spring.io/browse/DATAJPA-209
      */
     @Query("SELECT a FROM ArticlePersistence a WHERE a.primaryCategory = :primaryCategory " +
             "AND a.submissionTimeUtc BETWEEN :startTime AND :endTime ORDER BY a.submissionTimeUtc")

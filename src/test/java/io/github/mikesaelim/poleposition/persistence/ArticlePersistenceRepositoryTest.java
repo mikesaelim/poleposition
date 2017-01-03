@@ -58,46 +58,13 @@ public class ArticlePersistenceRepositoryTest {
         assertIdentifiersInOrder(Lists.newArrayList("article4", "article2"), results);
     }
 
-    @Ignore  // TODO these tests fail right now, make them pass!
-    @Test
-    public void testFindByPrimaryCategoryAndSubmissionTime_OnlyPrimaryCategory() throws Exception {
-        List<ArticlePersistence> results = repository.findByPrimaryCategoryAndSubmissionTime("hep-ph", null, null);
-        assertIdentifiersInOrder(Lists.newArrayList("article1", "article4", "article2"), results);
-    }
-
-    @Ignore
-    @Test
-    public void testFindByPrimaryCategoryAndSubmissionTime_OnlyTimeRange() throws Exception {
-        List<ArticlePersistence> results = repository.findByPrimaryCategoryAndSubmissionTime(null,
-                timestampFor(2016, 2, 1), timestampFor(2016, 4, 1));
-        assertIdentifiersInOrder(Lists.newArrayList("article4", "article3", "article2"), results);
-    }
-
-    @Ignore
     @Test
     public void testFindByPrimaryCategoryAndSubmissionTime_CrossedTimes() throws Exception {
-        List<ArticlePersistence> results = repository.findByPrimaryCategoryAndSubmissionTime(null,
+        List<ArticlePersistence> results = repository.findByPrimaryCategoryAndSubmissionTime("hep-ph",
                 timestampFor(2016, 2, 16), timestampFor(2016, 2, 15));
         assertTrue(results.isEmpty());
     }
 
-    @Ignore
-    @Test
-    public void testFindByPrimaryCategoryAndSubmissionTime_OnlyStartTime() throws Exception {
-        List<ArticlePersistence> results = repository.findByPrimaryCategoryAndSubmissionTime(null,
-                timestampFor(2016, 3, 1), null);
-        assertIdentifiersInOrder(Lists.newArrayList("article2"), results);
-    }
-
-    @Ignore
-    @Test
-    public void testFindByPrimaryCategoryAndSubmissionTime_OnlyEndTime() throws Exception {
-        List<ArticlePersistence> results = repository.findByPrimaryCategoryAndSubmissionTime(null,
-                null, timestampFor(2016, 2, 15));
-        assertIdentifiersInOrder(Lists.newArrayList("article1", "article4"), results);
-    }
-
-    @Ignore
     @Test
     public void testFindByPrimaryCategoryAndSubmissionTime_EmptyResult() throws Exception {
         List<ArticlePersistence> results = repository.findByPrimaryCategoryAndSubmissionTime("blargh", null, null);
